@@ -5,7 +5,8 @@
   "description": "Passar uma URL gigante de um meme, vídeo ou qualquer outra coisa na internet para um(a) amigo(a) é uma situação embaraçosa. Tudo piora quando a pessoa que recebe o link não tem como abri-lo diretamente e é obrigada a escrever o link caractere por caractere.",
   "main": "./src/app.js",
   "scripts": {
-    "start": "node ./src/app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
