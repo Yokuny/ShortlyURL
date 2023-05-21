@@ -8,24 +8,29 @@ const signup = async (req, res) => {
     const hashPass = await bcrypt.hash(password, 10);
     const query = "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)";
     await db.query(query, [name, email, hashPass]);
+
     return res.sendStatus(201);
   } catch (err) {
-    console.log(err.detail);
     return res.sendStatus(409);
   }
 };
+
 const signin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const query = "SELECT * FROM users WHERE email = $1";
-    const foundUser = await db.query(query, [email]);
-    console.log(foundUser);
+    const { rows: user } = await db.query(query, [email]);
+
+    // verificando se o email existe e se a senha coencide com a senha do banco de dados
+    if (!user.length || !(await bcrypt.compare(password, user[0].password))) {
+      return res.status(401).send("Email or password incorrect");
+    }
+    //inserir o token em uma tablea de tokens
+    const newToken = token();
+    res.status(200).send({ token: newToken });
   } catch (err) {
     console.log(err);
+    return res.sendStatus(401);
   }
-  const a = "retorno do db";
-  console.log(await bcrypt.compare(password, a));
-  //Caso o usuário/senha não seja compatível (ou não exista), retornar o status code 401.
-  res.status(200).send({ token: "MEUTOKEN" });
 };
 export default { signup, signin };
