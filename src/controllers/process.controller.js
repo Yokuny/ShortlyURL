@@ -26,7 +26,7 @@ const getUrl = async (req, res) => {
 
   try {
     const { rows: line } = await db.query(query, [id]);
-    if (!line) return res.status(404).send({ message: "URL not found" });
+    if (!line.length) return res.status(404).send({ message: "URL not found" });
 
     res.status(200).send({
       id: line[0].id,
