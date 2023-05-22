@@ -9,7 +9,7 @@ const authenticate = async (req, res, next) => {
     const query = "SELECT * FROM tokens WHERE token = $1";
     const { rows: tokens } = await db.query(query, [token]);
     if (!tokens.length) return res.sendStatus(401);
-    res.locals.user = tokens[0].user_id;
+    res.locals.user = tokens[0].userId;
     next();
   } catch (err) {
     res.status(500).send({ message: err.message });

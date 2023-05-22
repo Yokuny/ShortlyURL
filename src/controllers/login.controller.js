@@ -17,8 +17,7 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   const id = res.locals.user;
-  const query =
-    "INSERT INTO tokens (user_id, token) VALUES ($1, gen_random_uuid()) ON CONFLICT (user_id) DO UPDATE SET token = gen_random_uuid() RETURNING token;";
+  const query = `INSERT INTO tokens ("userId", token) VALUES ($1, gen_random_uuid()) ON CONFLICT ("userId") DO UPDATE SET token = gen_random_uuid() RETURNING token;`;
 
   try {
     const {
