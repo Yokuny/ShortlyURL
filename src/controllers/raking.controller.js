@@ -1,14 +1,12 @@
 import db from "../database/db.database.js";
 
-const rank = (req, res) => {
-  
-const getRanking = async (req, res) => {
+const rank = async (req, res) => {
   const query = `
     SELECT
       u.id,
       u.name,
       COUNT(ur.id) AS linksCount,
-      SUM(ur.visitCount) AS visitCount
+      COALESCE(SUM(ur.visitCount), 0) AS visitCount
     FROM
       users u
     LEFT JOIN
@@ -17,15 +15,16 @@ const getRanking = async (req, res) => {
       u.id,
       u.name
     ORDER BY
-      visitCount DESC;
+      visitCount DESC
+    LIMIT 10;
   `;
+
   try {
     const { rows: rankingData } = await db.query(query);
+
     return res.status(200).json(rankingData);
   } catch (err) {
-    console.error("Error getting ranking", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ message: err.message });
   }
-};
 };
 export default rank;

@@ -29,7 +29,7 @@ const getUser = async (req, res) => {
     return res.status(200).json(userData[0]);
   } catch (err) {
     console.error("Error getting user", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ message: err.message });
   }
 };
 

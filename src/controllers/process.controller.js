@@ -1,4 +1,3 @@
-import e from "cors";
 import db from "../database/db.database.js";
 import { nanoid } from "nanoid";
 
@@ -16,8 +15,8 @@ const registerUrl = async (req, res) => {
       id: line[0].id,
       shortUrl: line[0].shorturl,
     });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 };
 
@@ -34,8 +33,8 @@ const getUrl = async (req, res) => {
       shortUrl: line[0].shorturl,
       url: line[0].url,
     });
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
+  } catch (err) {
+    return res.status(500).send({ message: err.message });
   }
 };
 
@@ -48,8 +47,8 @@ const openUrl = async (req, res) => {
     if (!url.length) return res.status(404).send({ message: "URL not found" });
 
     return res.redirect(302, url[0].url);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 };
 
@@ -65,8 +64,8 @@ const deleteUrl = async (req, res) => {
 
     await db.query(queryDelete, [id]);
     res.sendStatus(204);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 };
 
