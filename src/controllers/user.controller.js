@@ -6,17 +6,17 @@ const getUser = async (req, res) => {
     SELECT
       u.id,
       u.name,
-      COALESCE(SUM(ur.visitCount), 0) AS visitCount,
+      COALESCE(SUM(ur."visitCount"), 0) AS "visitCount",
       json_agg(json_build_object(
         'id', ur.id,
-        'shortUrl', ur.shortUrl,
+        "shortUrl", ur."shortUrl",
         'url', ur.url,
-        'visitCount', ur.visitCount
-      )) AS shortenedUrls
+        "visitCount", ur."visitCount"
+      )) AS "shortenedUrls"
     FROM
       users u
     LEFT JOIN
-      urls ur ON u.id = ur.user_id
+      urls ur ON u.id = ur."userId"
     WHERE
       u.id = $1
     GROUP BY
