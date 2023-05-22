@@ -56,13 +56,13 @@ const openUrl = async (req, res) => {
 const deleteUrl = async (req, res) => {
   const id = req.locals.user;
   const query = "SELECT * FROM urls WHERE id = $1";
+  const queryDelete = "DELETE FROM urls WHERE id = $1";
 
   try {
     const { rows: line } = await db.query(query, [id]);
     if (!line) return res.status(404).send({ message: "URL not found" });
     if (line[0].user_id !== parseInt(id)) return res.status(401).send({ message: "Unauthorized" });
 
-    const queryDelete = "DELETE FROM urls WHERE id = $1";
     await db.query(queryDelete, [id]);
     res.sendStatus(204);
   } catch (error) {
