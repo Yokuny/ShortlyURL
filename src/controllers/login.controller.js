@@ -1,6 +1,5 @@
 import db from "../database/db.database.js";
 import bcrypt from "bcrypt";
-import { v4 as token } from "uuid";
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -13,22 +12,19 @@ const signup = async (req, res) => {
   } catch (err) {
     return res.status(409).send({ message: err.message });
   }
+  //ok
 };
 
 const signin = async (req, res) => {
-  const { email, password } = req.body;
+  const id = res.locals.user;
   try {
-    const query = "SELECT * FROM users WHERE email = $1";
-    const { rows: user } = await db.query(query, [email]);
-    if (!user.length || !(await bcrypt.compare(password, user[0].password))) {
-      return res.status(401).send("Email or password incorrect");
-    }
-
-    const newToken = token();
-    const queryToken = "INSERT INTO users (token) VALUES ($1)";
-    await db.query(queryToken, [newToken]);
-
-    res.status(200).send({ token: newToken });
+    const query =
+      "INSERT INTO tokens (user_id, token) VALUES ($1, gen_random_uuid()) ON CONFLICT (user_id) DO UPDATE SET token = gen_random_uuid() RETURNING token;";
+    const {
+      rows: [result],
+    } = await db.query(query, [id]);
+    const token = result.token;
+    res.status(200).send({ token: token });
   } catch (err) {
     console.log(err);
     return res.status(401).send({ message: err.message });

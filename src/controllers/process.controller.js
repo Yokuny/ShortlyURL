@@ -50,7 +50,7 @@ const openUrl = async (req, res) => {
 };
 
 const deleteUrl = async (req, res) => {
-  const { id } = req.params;
+  const id = req.locals.user;
   const query = "SELECT * FROM urls WHERE id = $1";
 
   try {
