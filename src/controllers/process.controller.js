@@ -52,9 +52,9 @@ const openUrl = async (req, res) => {
 const deleteUrl = async (req, res) => {
   const { id } = req.params;
   const query = "SELECT * FROM urls WHERE id = $1";
+
   try {
     const { rows: line } = await db.query(query, [id]);
-
     if (!line) return res.status(404).send({ message: "URL not found" });
     if (line[0].user_id !== parseInt(id)) return res.status(401).send({ message: "Unauthorized" });
 

@@ -20,13 +20,14 @@ const signin = async (req, res) => {
   try {
     const query = "SELECT * FROM users WHERE email = $1";
     const { rows: user } = await db.query(query, [email]);
-
-    // verificando se o email existe e se a senha coencide com a senha do banco de dados
     if (!user.length || !(await bcrypt.compare(password, user[0].password))) {
       return res.status(401).send("Email or password incorrect");
     }
-    //inserir o token em uma tablea de tokens
+
     const newToken = token();
+    const queryToken = "INSERT INTO users (token) VALUES ($1)";
+    await db.query(queryToken, [newToken]);
+
     res.status(200).send({ token: newToken });
   } catch (err) {
     console.log(err);
