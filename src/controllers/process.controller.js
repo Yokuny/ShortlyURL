@@ -53,18 +53,17 @@ const openUrl = async (req, res) => {
 };
 
 const deleteUrl = async (req, res) => {
+  const id = res.locals.user;
   const { id: urlId } = req.params;
   if (!urlId) return res.status(401).send({ message: "Missing url id" });
-
-  const id = res.locals.user;
 
   const query = "SELECT * FROM urls WHERE id = $1";
   const queryDelete = "DELETE FROM urls WHERE id = $1";
 
   try {
     const { rows: line } = await db.query(query, [urlId]);
-    if (!line) return res.status(404).send({ message: "URL not found" });
-    console.log(line);
+    if (!line.length) return res.status(404).send({ message: "URL not found" });
+
     if (line[0].userId !== parseInt(id)) return res.status(401).send({ message: "Unauthorized" });
 
     await db.query(queryDelete, [urlId]);
