@@ -39,33 +39,30 @@ const getUrl = async (req, res) => {
 const openUrl = async (req, res) => {
   const { shortUrl } = req.params;
   const query = "UPDATE urls SET visitcount = visitcount + 1 WHERE shorturl = $1 RETURNING url";
+
   try {
     const { rows: url } = await db.query(query, [shortUrl]);
-    if (!url) return res.status(404).send({ message: "URL not found" });
-    res.redirect(301, url[0].url);
+    if (!url.length) return res.status(404).send({ message: "URL not found" });
+    return res.redirect(302, url[0].url);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 };
 
-//
-//
-//
-//
-//
-const deleteUrl = (req, res) => {
+const deleteUrl = async (req, res) => {
   const { id } = req.params;
-  //Remover a url encurtada do banco de dados.
-
-  // Deve responder com status code 401 quando a url encurtada não pertencer ao usuário.
-
-  //Se a url for do usuário, deve responder com status code 204 e excluir a url encurtada.
-
-  //Caso a url encurtada não exista, responder com status code 404.
+  const query = "SELECT * FROM urls WHERE id = $1";
   try {
-    res.status(204).send();
+    const { rows: line } = await db.query(query, [id]);
+
+    if (!line) return res.status(404).send({ message: "URL not found" });
+    if (line[0].user_id !== parseInt(id)) return res.status(401).send({ message: "Unauthorized" });
+
+    const queryDelete = "DELETE FROM urls WHERE id = $1";
+    await db.query(queryDelete, [id]);
+    res.sendStatus(204);
   } catch (error) {
-    res.status(404).send({ message: "URL not found" });
+    res.status(500).send({ message: error.message });
   }
 };
 
