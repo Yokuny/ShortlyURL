@@ -11,7 +11,7 @@ const signup = async (req, res) => {
 
     return res.sendStatus(201);
   } catch (err) {
-    return res.sendStatus(409);
+    return res.status(409).send({ message: err.message });
   }
 };
 
@@ -30,7 +30,7 @@ const signin = async (req, res) => {
     res.status(200).send({ token: newToken });
   } catch (err) {
     console.log(err);
-    return res.sendStatus(401);
+    return res.status(401).send({ message: err.message });
   }
 };
 export default { signup, signin };
