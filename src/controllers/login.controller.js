@@ -3,23 +3,24 @@ import bcrypt from "bcrypt";
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
+  const query = "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)";
+
   try {
     const hashPass = await bcrypt.hash(password, 10);
-    const query = "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)";
     await db.query(query, [name, email, hashPass]);
 
     return res.sendStatus(201);
   } catch (err) {
     return res.status(409).send({ message: err.message });
   }
-  //ok
 };
 
 const signin = async (req, res) => {
   const id = res.locals.user;
+  const query =
+    "INSERT INTO tokens (user_id, token) VALUES ($1, gen_random_uuid()) ON CONFLICT (user_id) DO UPDATE SET token = gen_random_uuid() RETURNING token;";
+
   try {
-    const query =
-      "INSERT INTO tokens (user_id, token) VALUES ($1, gen_random_uuid()) ON CONFLICT (user_id) DO UPDATE SET token = gen_random_uuid() RETURNING token;";
     const {
       rows: [result],
     } = await db.query(query, [id]);

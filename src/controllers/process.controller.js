@@ -4,9 +4,10 @@ import { nanoid } from "nanoid";
 
 const registerUrl = async (req, res) => {
   const { url } = req.body;
-  const id = req.locals.user;
+  const id = res.locals.user;
   const shortUrl = nanoid(8);
   const query = `INSERT INTO urls (user_id, url, shortUrl) VALUES ($1, $2, $3) RETURNING *`;
+
   try {
     const { rows: line } = await db.query(query, [id, url, shortUrl]);
     if (!line) throw new Error("Error to insert url");
@@ -23,6 +24,7 @@ const registerUrl = async (req, res) => {
 const getUrl = async (req, res) => {
   const { id } = req.params;
   const query = `SELECT * FROM urls WHERE id = $1`;
+
   try {
     const { rows: line } = await db.query(query, [id]);
     if (!line) return res.status(404).send({ message: "URL not found" });
@@ -39,11 +41,12 @@ const getUrl = async (req, res) => {
 
 const openUrl = async (req, res) => {
   const { shortUrl } = req.params;
-  const query = "UPDATE urls SET visitcount = visitcount + 1 WHERE shorturl = $1 RETURNING url";
+  const query = `UPDATE urls SET visitcount = visitcount + 1 WHERE shorturl = $1 RETURNING url`;
 
   try {
     const { rows: url } = await db.query(query, [shortUrl]);
     if (!url.length) return res.status(404).send({ message: "URL not found" });
+
     return res.redirect(302, url[0].url);
   } catch (error) {
     res.status(500).send({ message: error.message });
