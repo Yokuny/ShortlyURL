@@ -5,22 +5,24 @@ const rank = async (req, res) => {
     SELECT
       u.id,
       u.name,
-      COUNT(ur.id) AS linksCount,
-      COALESCE(SUM(ur.visitCount), 0) AS visitCount
+      COUNT(ur.id) AS "linksCount",
+      COALESCE(SUM(ur."visitCount"), 0) AS "visitCount"
     FROM
       users u
     LEFT JOIN
-      urls ur ON u.id = ur.user_id
+      urls ur ON u.id = ur."userId"
     GROUP BY
       u.id,
       u.name
     ORDER BY
-      visitCount DESC
+     "visitCount" DESC
     LIMIT 10;
   `;
 
   try {
     const { rows: rankingData } = await db.query(query);
+
+    console.log(rankingData);
 
     return res.status(200).json(rankingData);
   } catch (err) {

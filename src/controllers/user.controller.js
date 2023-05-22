@@ -9,9 +9,9 @@ const getUser = async (req, res) => {
       COALESCE(SUM(ur."visitCount"), 0) AS "visitCount",
       json_agg(json_build_object(
         'id', ur.id,
-        "shortUrl", ur."shortUrl",
+        'shortUrl', ur."shortUrl",
         'url', ur.url,
-        "visitCount", ur."visitCount"
+        'visitCount', ur."visitCount"
       )) AS "shortenedUrls"
     FROM
       users u
@@ -24,11 +24,12 @@ const getUser = async (req, res) => {
       u.name;
   `;
   try {
-    const { rows: userData } = await db.query(query, [id]);
-    console.log(userData[0]);
-    return res.status(200).json(userData[0]);
+    const {
+      rows: [userData],
+    } = await db.query(query, [id]);
+
+    return res.status(200).json(userData);
   } catch (err) {
-    console.error("Error getting user", err);
     return res.status(500).json({ message: err.message });
   }
 };
