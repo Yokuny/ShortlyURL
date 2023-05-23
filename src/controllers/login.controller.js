@@ -1,13 +1,8 @@
-import db from "../database/db.database.js";
-import bcrypt from "bcrypt";
+import login from "../repositories/loginRepository.js";
 
 const signup = async (req, res) => {
-  const { name, email, password } = req.body;
-  const query = "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)";
-
   try {
-    const hashPass = await bcrypt.hash(password, 10);
-    await db.query(query, [name, email, hashPass]);
+    await login.signup(req.body);
 
     return res.sendStatus(201);
   } catch (err) {
@@ -17,13 +12,10 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   const id = res.locals.user;
-  const query = `INSERT INTO tokens ("userId", token) VALUES ($1, gen_random_uuid()) ON CONFLICT ("userId") DO UPDATE SET token = gen_random_uuid() RETURNING token;`;
 
   try {
-    const {
-      rows: [result],
-    } = await db.query(query, [id]);
-    const token = result.token;
+    const token = await login.signin(id);
+
     res.status(200).send({ token: token });
   } catch (err) {
     console.log(err);

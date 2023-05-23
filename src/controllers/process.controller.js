@@ -4,13 +4,14 @@ import { nanoid } from "nanoid";
 const registerUrl = async (req, res) => {
   const { url } = req.body;
   const id = res.locals.user;
+
   const shortUrl = nanoid(8);
   const query = `INSERT INTO urls ("userId", url, "shortUrl") VALUES ($1, $2, $3) RETURNING *`;
 
   try {
     const { rows: line } = await db.query(query, [id, url, shortUrl]);
-    if (!line) throw new Error("Error to insert url");
-    console.log(line[0]);
+    if (!line.length) throw new Error("Error to insert url");
+
     res.status(201).send({
       id: line[0].id,
       shortUrl: line[0].shortUrl,

@@ -2,8 +2,9 @@ import db from "../database/db.database.js";
 import bcrypt from "bcrypt";
 const checkUser = async (req, res, next) => {
   const { email, password } = req.body;
+  const query = "SELECT * FROM users WHERE email = $1";
+
   try {
-    const query = "SELECT * FROM users WHERE email = $1";
     const { rows: user } = await db.query(query, [email]);
 
     if (!user.length || !(await bcrypt.compare(password, user[0].password))) {

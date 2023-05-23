@@ -4,9 +4,10 @@ const authenticate = async (req, res, next) => {
 
   const token = authorization?.replace("Bearer ", "");
   if (!token) return res.sendStatus(401);
+  
+  const query = "SELECT * FROM tokens WHERE token = $1";
 
   try {
-    const query = "SELECT * FROM tokens WHERE token = $1";
     const { rows: tokens } = await db.query(query, [token]);
     if (!tokens.length) return res.sendStatus(401);
     res.locals.user = tokens[0].userId;
