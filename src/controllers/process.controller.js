@@ -1,17 +1,12 @@
+import process from "../repositories/processRepository.js";
+
 import db from "../database/db.database.js";
-import { nanoid } from "nanoid";
 
 const registerUrl = async (req, res) => {
-  const { url } = req.body;
-  const id = res.locals.user;
-
-  const shortUrl = nanoid(8);
-  const query = `INSERT INTO urls ("userId", url, "shortUrl") VALUES ($1, $2, $3) RETURNING *`;
-
   try {
-    const { rows: line } = await db.query(query, [id, url, shortUrl]);
-    if (!line.length) throw new Error("Error to insert url");
-
+    const line = await process.registerUrl(res.locals.user, req.body.url);
+    console.log("line");
+    console.log(line);
     res.status(201).send({
       id: line[0].id,
       shortUrl: line[0].shortUrl,
