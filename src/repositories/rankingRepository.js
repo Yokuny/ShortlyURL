@@ -1,6 +1,6 @@
 import db from "../database/db.database.js";
 
-const ranking = async () => {
+const getRanking = async () => {
   const query = `
     SELECT
       u.id,
@@ -20,11 +20,11 @@ const ranking = async () => {
   `;
 
   try {
-    const { rows: rankingData } = await db.query(query);
+    const { rows: ranking } = await db.query(query);
 
-    return rankingData;
+    return ranking;
   } catch (err) {
     throw new Error(err.message);
   }
 };
-export default { ranking };
+export default { getRanking };
