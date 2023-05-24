@@ -7,7 +7,7 @@ const process = Router();
 
 process.post("/urls/shorten", authenticate, validate(urlSchema), operation.registerUrl);
 process.get("/urls/:id", operation.getUrl);
-process.get("/urls/open/:shortUrl", operation.openUrl);//F3UDWO3k
+process.get("/urls/open/:shortUrl", operation.openUrl);
 process.delete("/urls/:id", authenticate, operation.deleteUrl);
 
 export default process;

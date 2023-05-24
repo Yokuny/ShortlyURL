@@ -1,38 +1,14 @@
-import db from "../database/db.database.js";
+import process from "../repositories/userRepository.js";
 
 const getUser = async (req, res) => {
-  const id = res.locals.user;
-  const query = `
-    SELECT
-      u.id,
-      u.name,
-      COALESCE(SUM(ur."visitCount"), 0) AS "visitCount",
-      json_agg(json_build_object(
-        'id', ur.id,
-        'shortUrl', ur."shortUrl",
-        'url', ur.url,
-        'visitCount', ur."visitCount"
-      )) AS "shortenedUrls"
-    FROM
-      users u
-    LEFT JOIN
-      urls ur ON u.id = ur."userId"
-    WHERE
-      u.id = $1
-    GROUP BY
-      u.id,
-      u.name;
-  `;
   try {
-    const {
-      rows: [userData],
-    } = await db.query(query, [id]);
+    const user = await process.getUser(res.locals.user);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    return res.status(200).json(userData);
+    return res.status(200).json(user);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
-
 
 export default getUser;
