@@ -1,28 +1,9 @@
-import db from "../database/db.database.js";
+import process from "../repositories/rankingRepository.js";
 
 const rank = async (req, res) => {
-  const query = `
-    SELECT
-      u.id,
-      u.name,
-      COUNT(ur.id) AS "linksCount",
-      COALESCE(SUM(ur."visitCount"), 0) AS "visitCount"
-    FROM
-      users u
-    LEFT JOIN
-      urls ur ON u.id = ur."userId"
-    GROUP BY
-      u.id,
-      u.name
-    ORDER BY
-     "visitCount" DESC
-    LIMIT 10;
-  `;
-
   try {
-    const { rows: rankingData } = await db.query(query);
-
-    console.log(rankingData);
+    const rankingData = await process.ranking();
+    if (!rankingData) return res.status(404).json({ message: "Ranking not found" });
 
     return res.status(200).json(rankingData);
   } catch (err) {
